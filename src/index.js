@@ -1,4 +1,4 @@
-const { app, BrowserWindow,ipcMain } = require('electron');
+const { app, BrowserWindow,ipcMain, nativeTheme } = require('electron');
 const path = require('node:path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -23,11 +23,32 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools();
 };
 
+// Listen for dark mode toggle
+ipcMain.handle('dark-mode:toggle', () => {
+  if (nativeTheme.shouldUseDarkColors) {
+    nativeTheme.themeSource = 'light';
+  } else {
+    nativeTheme.themeSource = 'dark';
+
+  }
+  return nativeTheme.shouldUseDarkColors;
+}); 
+
+
+// Listen for system theme reset
+ipcMain.handle('dark-mode:system', () => {
+  nativeTheme.themeSource = 'system';
+  
+});
+
+
+
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  ipcMain.handle('ping', () => 'pong'); // Example IPC handler
+  //ipcMain.handle('ping', () => 'pong'); // Example IPC handler
   createWindow();
 
   // On OS X it's common to re-create a window in the app when the
